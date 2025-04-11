@@ -1,4 +1,4 @@
-function objectAssignDeep(target, ...sources) {
+export function objectAssignDeep(target, ...sources) {
   const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   sources.forEach(source => {
     Object.entries(source || {}).forEach(([key, value]) => {
@@ -8,5 +8,3 @@ function objectAssignDeep(target, ...sources) {
   });
   return target;
 }
-
-export { objectAssignDeep };
