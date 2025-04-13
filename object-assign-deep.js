@@ -1,5 +1,7 @@
 export function objectAssignDeep(target, ...sources) {
-  const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+  function isObject(value) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+  }
   sources.forEach(source => {
     Object.entries(source || {}).forEach(([key, value]) => {
       const targetValue = target[key];
