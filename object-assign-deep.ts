@@ -1,19 +1,24 @@
-export function objectAssignDeep(target: {}, ...sources: any[]): any {
-  function isPlainObject(value: any): boolean {
-    return value !== null && typeof value === 'object' && !Array.isArray(value);
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+
+export function objectAssignDeep<T extends object, U extends object[]>(target: T, ...sources: U): T & UnionToIntersection<U[number]> {
+  function isPlainObject(value: unknown): value is Record<string, any> {
+    return Object.prototype.toString.call(value) === '[object Object]';
   }
-  function safeStructuredClone(value: any): any {
+  function safeStructuredClone<T>(value: T): T {
     try {
       return structuredClone(value);
     } catch {
-      return value;
+      return Array.isArray(value) ? ([...value] as T) : isPlainObject(value) ? (objectAssignDeep({}, value) as T) : value;
     }
   }
   sources.forEach(source => {
-    Object.entries(source || {}).forEach(([key, value]) => {
-      const targetValue = (target as any)[key];
-      (target as any)[key] = isPlainObject(value) ? objectAssignDeep(isPlainObject(targetValue) ? safeStructuredClone(targetValue) : {}, value) : safeStructuredClone(value);
+    if (!source || typeof source !== 'object') {
+      return;
+    }
+    Object.entries(source).forEach(([key, value]) => {
+      const targetValue = target[key as keyof T];
+      target[key as keyof T] = isPlainObject(value) && isPlainObject(targetValue) ? objectAssignDeep(targetValue, value) : safeStructuredClone(value);
     });
   });
-  return target;
+  return target as T & UnionToIntersection<U[number]>;
 }

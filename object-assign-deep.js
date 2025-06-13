@@ -1,18 +1,21 @@
 export function objectAssignDeep(target, ...sources) {
   function isPlainObject(value) {
-    return value !== null && typeof value === 'object' && !Array.isArray(value);
+    return Object.prototype.toString.call(value) === '[object Object]';
   }
   function safeStructuredClone(value) {
     try {
       return structuredClone(value);
     } catch {
-      return value;
+      return Array.isArray(value) ? [...value] : isPlainObject(value) ? objectAssignDeep({}, value) : value;
     }
   }
   sources.forEach(source => {
-    Object.entries(source || {}).forEach(([key, value]) => {
+    if (!source || typeof source !== 'object') {
+      return;
+    }
+    Object.entries(source).forEach(([key, value]) => {
       const targetValue = target[key];
-      target[key] = isPlainObject(value) ? objectAssignDeep(isPlainObject(targetValue) ? safeStructuredClone(targetValue) : {}, value) : safeStructuredClone(value);
+      target[key] = isPlainObject(value) && isPlainObject(targetValue) ? objectAssignDeep(targetValue, value) : safeStructuredClone(value);
     });
   });
   return target;
