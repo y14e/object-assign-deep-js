@@ -1,5 +1,5 @@
 export function objectAssignDeep(target: {}, ...sources: any[]): any {
-  function isNonArrayObject(value: any): boolean {
+  function isPlainObject(value: any): boolean {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
   }
   function safeStructuredClone(value: any): any {
@@ -12,7 +12,7 @@ export function objectAssignDeep(target: {}, ...sources: any[]): any {
   sources.forEach(source => {
     Object.entries(source || {}).forEach(([key, value]) => {
       const targetValue = (target as any)[key];
-      (target as any)[key] = isNonArrayObject(value) ? objectAssignDeep(isNonArrayObject(targetValue) ? safeStructuredClone(targetValue) : {}, value) : safeStructuredClone(value);
+      (target as any)[key] = isPlainObject(value) ? objectAssignDeep(isPlainObject(targetValue) ? safeStructuredClone(targetValue) : {}, value) : safeStructuredClone(value);
     });
   });
   return target;
