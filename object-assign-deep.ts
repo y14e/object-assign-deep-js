@@ -11,9 +11,9 @@ export function objectAssignDeep<T extends object, U extends object[]>(target: T
   };
   sources.forEach(source => {
     if (!source || typeof source !== 'object') return;
-    Object.entries(source).forEach(([key, value]) => {
+    Object.entries(source).forEach(([key, sourceValue]) => {
       const targetValue = target[key as keyof T];
-      target[key as keyof T] = isPlainObject(value) && isPlainObject(targetValue) ? objectAssignDeep(targetValue, value) : safeStructuredClone(value);
+      target[key as keyof T] = isPlainObject(sourceValue) && isPlainObject(targetValue) ? objectAssignDeep(targetValue, sourceValue) : safeStructuredClone(sourceValue);
     });
   });
   return target as T & UnionToIntersection<U[number]>;
